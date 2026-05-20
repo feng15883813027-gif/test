@@ -27,12 +27,127 @@ const pinyinPronunciation = {
     'yuan': '冤', 'yin': '因', 'yun': '晕', 'ying': '英'
 };
 
+// 语音合成工具类 - 兼容移动端和Web端
+class SpeechManager {
+    constructor() {
+        this.voices = [];
+        this.hasWarmedUp = false;
+        this.init();
+    }
+    
+    init() {
+        // 获取语音列表
+        this.voices = speechSynthesis.getVoices();
+        
+        // 如果语音列表为空，等待voiceschanged事件
+        if (this.voices.length === 0) {
+            speechSynthesis.addEventListener('voiceschanged', () => {
+                this.voices = speechSynthesis.getVoices();
+            });
+        }
+        
+        // 设置用户交互预热（解决iOS Safari自动播放限制）
+        this.setupUserInteractionWarmup();
+    }
+    
+    setupUserInteractionWarmup() {
+        const warmUp = () => {
+            if (this.hasWarmedUp) return;
+            try {
+                // 静音预热，初始化语音引擎
+                const utterance = new SpeechSynthesisUtterance('');
+                utterance.lang = 'zh-CN';
+                utterance.volume = 0;
+                speechSynthesis.speak(utterance);
+                this.hasWarmedUp = true;
+            } catch (e) {
+                console.warn('Speech warmup failed:', e);
+            }
+        };
+        
+        // 监听用户第一次交互
+        document.addEventListener('click', warmUp, { once: true });
+        document.addEventListener('touchstart', warmUp, { once: true });
+        document.addEventListener('keydown', warmUp, { once: true });
+    }
+    
+    getVoice(lang) {
+        // 刷新语音列表
+        if (this.voices.length === 0) {
+            this.voices = speechSynthesis.getVoices();
+        }
+        
+        // 根据语言获取语音
+        if (lang.includes('zh')) {
+            // 优先选择中文语音
+            const preferredNames = ['Xiaoxiao', 'Tingting', 'Yaoyao', 'Luna', 'Mei-Jia', 'Google 普通话', 'Google Chinese', 'Mandarin'];
+            for (const name of preferredNames) {
+                const voice = this.voices.find(v => 
+                    v.lang.includes('zh') && 
+                    v.name.toLowerCase().includes(name.toLowerCase())
+                );
+                if (voice) return voice;
+            }
+            // 返回任意中文语音
+            return this.voices.find(v => v.lang.includes('zh')) || null;
+        } else if (lang.includes('en')) {
+            // 优先选择英文语音
+            const preferredNames = ['Samantha', 'Alex', 'Google US English', 'Google UK English', 'English'];
+            for (const name of preferredNames) {
+                const voice = this.voices.find(v => 
+                    v.lang.includes('en') && 
+                    v.name.toLowerCase().includes(name.toLowerCase())
+                );
+                if (voice) return voice;
+            }
+            // 返回任意英文语音
+            return this.voices.find(v => v.lang.includes('en')) || null;
+        }
+        
+        return null;
+    }
+    
+    speak(text, options = {}) {
+        // 取消之前的语音，避免重叠
+        speechSynthesis.cancel();
+        
+        // 确保有文本
+        if (!text || text.trim() === '') {
+            return;
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // 设置语言
+        utterance.lang = options.lang || 'zh-CN';
+        
+        // 设置语音参数
+        utterance.rate = options.rate !== undefined ? options.rate : 0.8;
+        utterance.pitch = options.pitch !== undefined ? options.pitch : 1.2;
+        utterance.volume = options.volume !== undefined ? options.volume : 0.9;
+        
+        // 获取并设置语音（延迟获取以确保语音列表已加载）
+        setTimeout(() => {
+            const voice = this.getVoice(utterance.lang);
+            if (voice) {
+                utterance.voice = voice;
+            }
+            
+            try {
+                speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.warn('Speech synthesis failed:', e);
+            }
+        }, 50);
+    }
+}
+
+// 创建全局语音管理器实例
+const speechManager = new SpeechManager();
+
 function readPy(str) {
-    // 根据拼音读音映射表朗读
     let pronunciation = pinyinPronunciation[str] || str;
-    let u = new SpeechSynthesisUtterance(pronunciation);
-    u.lang = "zh-CN";
-    speechSynthesis.speak(u);
+    speechManager.speak(pronunciation, { lang: 'zh-CN', rate: 0.8, pitch: 1.3 });
 }
 
 const gameThemes = {
@@ -228,20 +343,10 @@ function speakText(text, callback) {
     utterance.pitch = 1.3;
     utterance.volume = 0.85;
     
-    // 尝试找到温柔的中文女声
-    const voices = speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => 
-        v.lang.includes('zh') && 
-        (v.name.includes('Xiaoxiao') || v.name.includes('Tingting') || v.name.includes('Yaoyao'))
-    );
-    
-    if (preferredVoice) {
-        utterance.voice = preferredVoice;
-    } else {
-        const chineseVoice = voices.find(v => v.lang.includes('zh'));
-        if (chineseVoice) {
-            utterance.voice = chineseVoice;
-        }
+    // 使用语音管理器获取语音
+    const voice = speechManager.getVoice('zh-CN');
+    if (voice) {
+        utterance.voice = voice;
     }
     
     if (callback) {
@@ -714,11 +819,7 @@ class CountingGame {
     }
     
     speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 0.8;
-        utterance.pitch = 1.2;
-        speechSynthesis.speak(utterance);
+        speechManager.speak(text, { lang: 'zh-CN', rate: 0.8, pitch: 1.2 });
     }
 }
 
@@ -914,37 +1015,14 @@ class EnglishLearning {
     
     speakWord(word, chinese) {
         // 先读英文
-        const englishUtterance = new SpeechSynthesisUtterance(word);
-        englishUtterance.lang = 'en-US';
-        englishUtterance.rate = 0.8;
-        englishUtterance.pitch = 1.2;
+        speechManager.speak(word, { lang: 'en-US', rate: 0.8, pitch: 1.2 });
         
-        // 尝试找到英文语音
-        const voices = speechSynthesis.getVoices();
-        const englishVoice = voices.find(v => v.lang.includes('en'));
-        if (englishVoice) {
-            englishUtterance.voice = englishVoice;
-        }
-        
-        // 英文读完后读中文
-        englishUtterance.onend = () => {
+        // 延迟播放中文（等待英文播放完毕）
+        setTimeout(() => {
             if (chinese) {
-                const chineseUtterance = new SpeechSynthesisUtterance(chinese);
-                chineseUtterance.lang = 'zh-CN';
-                chineseUtterance.rate = 0.8;
-                chineseUtterance.pitch = 1.3;
-                
-                // 尝试找到中文语音
-                const chineseVoice = voices.find(v => v.lang.includes('zh'));
-                if (chineseVoice) {
-                    chineseUtterance.voice = chineseVoice;
-                }
-                
-                speechSynthesis.speak(chineseUtterance);
+                speechManager.speak(chinese, { lang: 'zh-CN', rate: 0.8, pitch: 1.3 });
             }
-        };
-        
-        speechSynthesis.speak(englishUtterance);
+        }, word.length * 500 + 200);
     }
 }
 
