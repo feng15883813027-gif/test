@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宝宝拼音乐园</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="tabs">
+        <button id="gameTab" class="tab active">🎮 连连看游戏</button>
+        <button id="pinyinTab" class="tab">📚 拼音学习</button>
+    </div>
+    
+    <div class="game-container" id="gameSection">
+        <header>
+            <h1>🎈 宝宝拼音连连看 🎈</h1>
+            <div class="score-board">
+                <span>得分: <span id="score">0</span></span>
+                <span>配对: <span id="matches">0</span>/6</span>
+            </div>
+        </header>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- 卡片将通过JS生成 -->
+        </div>
+        
+        <div class="controls">
+            <button id="restartBtn" class="btn">🔄 重新开始</button>
+        </div>
+        
+        <div class="message" id="message">点击卡片开始游戏！</div>
+        
+        <div class="match-hint" id="matchHint">
+            <div class="hint-emoji"></div>
+            <div class="hint-text">
+                <span class="hint-pinyin"></span>
+                <span class="hint-name"></span>
+            </div>
+        </div>
+        
+        <div class="win-modal" id="winModal">
+            <div class="modal-content">
+                <h2>🎉 恭喜完成！🎉</h2>
+                <p>你太棒了！得分: <span id="finalScore">0</span></p>
+                <button id="playAgain" class="btn">再玩一次</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pinyin-container" id="pinyinSection">
+        <header>
+            <h1>📚 汉语拼音学习</h1>
+            <p class="pinyin-desc">点击拼音卡片听发音</p>
+        </header>
+        
+        <div class="pinyin-tabs">
+            <button id="shengmuTab" class="pinyin-tab active">声母 (23)</button>
+            <button id="yunmuTab" class="pinyin-tab">韵母 (24)</button>
+            <button id="zhengtiTab" class="pinyin-tab">整体认读音节 (16)</button>
+        </div>
+        
+        <div class="pinyin-board" id="pinyinBoard">
+            <!-- 拼音卡片将通过JS生成 -->
+        </div>
+        
+        <div class="pinyin-hint" id="pinyinHint">
+            <span class="hint-pinyin-text"></span>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
