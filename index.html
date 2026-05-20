@@ -3,16 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宝宝拼音乐园</title>
+    <title>宝宝乐园</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="tabs">
-        <button id="gameTab" class="tab active">🎮 连连看游戏</button>
-        <button id="pinyinTab" class="tab">📚 拼音学习</button>
+    <!-- 首页入口 -->
+    <div class="home-container" id="homeSection">
+        <header>
+            <h1>🏠 宝宝乐园</h1>
+            <p class="home-desc">选择一个游戏开始玩吧！</p>
+        </header>
+        
+        <div class="home-grid">
+            <div class="home-card" id="homeGame">
+                <div class="card-icon">🎮</div>
+                <h2>连连看游戏</h2>
+                <p>拼音配对，开心学习</p>
+            </div>
+            
+            <div class="home-card" id="homePinyin">
+                <div class="card-icon">📚</div>
+                <h2>拼音学习</h2>
+                <p>63个拼音，点击发音</p>
+            </div>
+            
+            <div class="home-card" id="homeSnake">
+                <div class="card-icon">🐍</div>
+                <h2>贪吃蛇游戏</h2>
+                <p>控制小蛇吃水果</p>
+            </div>
+            
+            <div class="home-card" id="homeCounting">
+                <div class="card-icon">🐱</div>
+                <h2>喂小猫吃鱼</h2>
+                <p>学习数字1-15</p>
+            </div>
+            
+            <div class="home-card" id="homeEnglish">
+                <div class="card-icon">🔤</div>
+                <h2>英语学习</h2>
+                <p>上传单词，看图学词</p>
+            </div>
+        </div>
+        
+        <div class="home-footer">
+            <p>🌟 适合3-6岁小朋友 🌟</p>
+        </div>
     </div>
     
+    <!-- 连连看游戏 -->
     <div class="game-container" id="gameSection">
+        <div class="back-btn" id="backHome">← 返回首页</div>
         <header>
             <h1>🎈 宝宝拼音连连看 🎈</h1>
             <div class="score-board">
@@ -48,7 +89,9 @@
         </div>
     </div>
     
+    <!-- 拼音学习 -->
     <div class="pinyin-container" id="pinyinSection">
+        <div class="back-btn" id="backHome2">← 返回首页</div>
         <header>
             <h1>📚 汉语拼音学习</h1>
             <p class="pinyin-desc">点击拼音卡片听发音</p>
@@ -66,6 +109,126 @@
         
         <div class="pinyin-hint" id="pinyinHint">
             <span class="hint-pinyin-text"></span>
+        </div>
+    </div>
+    
+    <!-- 数数游戏 -->
+    <div class="counting-container" id="countingSection">
+        <div class="back-btn" id="backHome4">← 返回首页</div>
+        <header>
+            <h1>🐱 喂小猫吃鱼</h1>
+            <p class="counting-desc">拖动小鱼到小猫嘴巴里喂食！</p>
+        </header>
+        
+        <div class="counting-game">
+            <div class="counting-cat" id="catTarget">
+                <div class="cat-thought">
+                    <span>我要吃 <span id="targetNumber">5</span> 条鱼！</span>
+                </div>
+                <div class="cat-emoji">🐱</div>
+                <div class="cat-mouth" id="catMouth">👅</div>
+                <div class="cat-target-area" id="catTargetArea"></div>
+            </div>
+            
+            <div class="fish-bowl" id="fishBowl">
+                <!-- 鱼将通过JS生成 -->
+            </div>
+            
+            <div class="counting-info">
+                <div class="current-count">
+                    <span>已喂: <span id="currentCount">0</span> 条</span>
+                </div>
+                <div class="target-count">
+                    <span>目标: <span id="showTarget">5</span> 条</span>
+                </div>
+            </div>
+            
+            <div class="fish-pool" id="fishPool">
+                <!-- 可拖动的鱼将通过JS生成 -->
+            </div>
+            
+            <button class="submit-btn" id="submitFish">✅ 确定喂食</button>
+            
+            <button class="reset-btn" id="resetCounting">🔄 重新开始</button>
+        </div>
+        
+        <div class="counting-result" id="countingResult">
+            <div class="result-content">
+                <div class="result-emoji"></div>
+                <p class="result-text"></p>
+                <button class="result-restart-btn" id="resultRestartBtn">🔄 再玩一次</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 贪吃蛇游戏 -->
+    <div class="snake-container" id="snakeSection">
+        <div class="back-btn" id="backHome3">← 返回首页</div>
+        <header>
+            <h1>🐍 贪吃蛇游戏</h1>
+            <div class="snake-score">
+                <span>得分: <span id="snakeScore">0</span></span>
+                <span>长度: <span id="snakeLength">1</span></span>
+            </div>
+        </header>
+        
+        <div class="snake-controls">
+            <button id="resetSnake" class="btn">🔄 重新开始</button>
+        </div>
+        
+        <div class="snake-board" id="snakeBoard">
+            <!-- 贪吃蛇游戏区域 -->
+        </div>
+        
+        <div class="snake-instructions">
+            <p>⬆️⬇️⬅️➡️ 方向键控制蛇的移动</p>
+            <p>或使用屏幕上的方向按钮</p>
+        </div>
+        
+        <div class="snake-buttons">
+            <div></div>
+            <button class="direction-btn" id="upBtn">⬆️</button>
+            <div></div>
+            <button class="direction-btn" id="leftBtn">⬅️</button>
+            <button class="direction-btn" id="downBtn">⬇️</button>
+            <button class="direction-btn" id="rightBtn">➡️</button>
+        </div>
+        
+        <div class="game-over-modal" id="gameOverModal">
+            <div class="modal-content">
+                <h2>💀 游戏结束</h2>
+                <p>得分: <span id="finalSnakeScore">0</span></p>
+                <button id="restartSnake" class="btn">再玩一次</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 英语学习 -->
+    <div class="english-container" id="englishSection">
+        <div class="back-btn" id="backHome5">← 返回首页</div>
+        <header>
+            <h1>🔤 英语学习</h1>
+            <p class="english-desc">上传单词，看图学词，点击朗读</p>
+        </header>
+        
+        <div class="english-words" id="englishWords">
+            <!-- 单词卡片将通过JS生成 -->
+        </div>
+        
+        <div class="english-empty" id="englishEmpty">
+            <div class="empty-icon">📚</div>
+            <p>还没有单词哦</p>
+            <p>请上传单词文件开始学习</p>
+        </div>
+        
+        <div class="english-upload">
+            <h3>📤 上传单词</h3>
+            <div class="upload-area">
+                <input type="file" id="wordFile" accept=".txt,.json" style="display: none;">
+                <button class="btn upload-btn" id="uploadWordBtn">选择文件</button>
+                <p class="upload-hint">支持 .txt 格式，每行一个单词</p>
+                <p class="upload-format">格式：apple 或 apple,苹果（系统自动翻译）</p>
+            </div>
         </div>
     </div>
     
