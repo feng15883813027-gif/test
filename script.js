@@ -1071,17 +1071,27 @@ function switchTab(tabName) {
 document.addEventListener('DOMContentLoaded', () => {
     initPinyinLearning();
     
-    // 首页卡片点击事件
-    document.getElementById('homeGame').addEventListener('click', () => switchTab('game'));
-    document.getElementById('homePinyin').addEventListener('click', () => switchTab('pinyin'));
-    document.getElementById('homeSnake').addEventListener('click', () => switchTab('snake'));
-    document.getElementById('homeCounting').addEventListener('click', () => switchTab('counting'));
-    document.getElementById('homeEnglish').addEventListener('click', () => switchTab('english'));
+    // 添加点击事件的辅助函数（支持 touch 和 click）
+    const addTabClick = (elementId, tabName) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            const handleClick = () => switchTab(tabName);
+            element.addEventListener('click', handleClick);
+            element.addEventListener('touchstart', handleClick);
+        }
+    };
     
-    // 返回首页按钮事件
-    document.getElementById('backHome').addEventListener('click', () => switchTab('home'));
-    document.getElementById('backHome2').addEventListener('click', () => switchTab('home'));
-    document.getElementById('backHome3').addEventListener('click', () => switchTab('home'));
-    document.getElementById('backHome4').addEventListener('click', () => switchTab('home'));
-    document.getElementById('backHome5').addEventListener('click', () => switchTab('home'));
+    // 首页卡片点击事件（支持移动端触摸）
+    addTabClick('homeGame', 'game');
+    addTabClick('homePinyin', 'pinyin');
+    addTabClick('homeSnake', 'snake');
+    addTabClick('homeCounting', 'counting');
+    addTabClick('homeEnglish', 'english');
+    
+    // 返回首页按钮事件（支持移动端触摸）
+    addTabClick('backHome', 'home');
+    addTabClick('backHome2', 'home');
+    addTabClick('backHome3', 'home');
+    addTabClick('backHome4', 'home');
+    addTabClick('backHome5', 'home');
 });
