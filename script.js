@@ -591,6 +591,76 @@ class CountingGame {
                 this.feedFish(fish);
             }
         });
+        
+        // 触摸事件支持
+        this.setupTouchEvents();
+    }
+    
+    setupTouchEvents() {
+        let draggedFish = null;
+        let touchClone = null;
+        
+        document.querySelectorAll('.draggable-fish').forEach(fish => {
+            fish.addEventListener('touchstart', (e) => {
+                if (fish.classList.contains('fed')) return;
+                e.preventDefault();
+                
+                draggedFish = fish;
+                const touch = e.touches[0];
+                
+                // 创建视觉克隆
+                touchClone = fish.cloneNode(true);
+                touchClone.style.position = 'fixed';
+                touchClone.style.pointerEvents = 'none';
+                touchClone.style.zIndex = '1000';
+                touchClone.style.opacity = '0.8';
+                touchClone.style.transform = 'scale(1.3)';
+                touchClone.style.left = (touch.clientX - 30) + 'px';
+                touchClone.style.top = (touch.clientY - 30) + 'px';
+                document.body.appendChild(touchClone);
+                
+                fish.style.opacity = '0.3';
+            }, { passive: false });
+            
+            fish.addEventListener('touchmove', (e) => {
+                if (!draggedFish) return;
+                e.preventDefault();
+                
+                const touch = e.touches[0];
+                if (touchClone) {
+                    touchClone.style.left = (touch.clientX - 30) + 'px';
+                    touchClone.style.top = (touch.clientY - 30) + 'px';
+                }
+            }, { passive: false });
+            
+            fish.addEventListener('touchend', (e) => {
+                if (!draggedFish) return;
+                e.preventDefault();
+                
+                const touch = e.changedTouches[0];
+                const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                // 检查是否释放到目标区域
+                if (dropTarget) {
+                    const catArea = dropTarget.closest('#catTargetArea');
+                    const catMouthArea = dropTarget.closest('#catMouth');
+                    
+                    if (catArea || catMouthArea || dropTarget.closest('.counting-cat')) {
+                        if (!draggedFish.classList.contains('fed')) {
+                            this.feedFish(draggedFish);
+                        }
+                    }
+                }
+                
+                // 清理
+                draggedFish.style.opacity = '1';
+                if (touchClone) {
+                    touchClone.remove();
+                    touchClone = null;
+                }
+                draggedFish = null;
+            }, { passive: false });
+        });
     }
     
     feedFish(fish) {
